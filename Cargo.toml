@@ -1,0 +1,22 @@
+[package]
+name = "sento"
+version = "0.1.0"
+authors = ["Jon Gjengset <jon@thesquareplanet.com>"]
+edition = "2021"
+license = "Apache-2.0"
+
+description = "A lock-free, append-only atomic pool."
+repository = "https://github.com/jonhoo/sento.git"
+
+keywords = ["pool", "atomic", "linked-list", "no_std"]
+categories = ["concurrency", "data-structures", "no-std"]
+
+[features]
+std = []
+
+default = ["std"]
+
+[dependencies]
+
+[target.'cfg(loom)'.dependencies]
+loom = "0.5.5"
