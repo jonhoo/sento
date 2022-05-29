@@ -156,6 +156,16 @@ pub struct Pool<T> {
     count: AtomicUsize,
 }
 
+// Sharing a Pool<T> in isolation is fine.
+// Sharing a Pool<T> enables sharing a T, so we require T: Sync.
+// Sharing a Pool<T> does _not_ enable moving a T (without unsafe code), so no T: Send is needed.
+unsafe impl<T> Sync for Pool<T> where T: Sync {}
+
+// Sending a Pool<T> in isolation is fine.
+// Sending a Pool<T> also makes &T available on that other thread, so we require T: Sync.
+// Dropping a Pool<T> will drop the Ts too, so we require T: Send.
+unsafe impl<T> Send for Pool<T> where T: Sync + Send {}
+
 impl<T> core::fmt::Debug for Pool<T>
 where
     T: core::fmt::Debug,
