@@ -74,6 +74,7 @@ const LOCK_BIT: usize = 1;
 /// An item from a [`Pool`].
 ///
 /// Only exposed in public interfaces as [`Acquired`].
+#[derive(Debug)]
 pub struct Node<T> {
     /// The value being stored in the node.
     v: T,
@@ -95,6 +96,8 @@ pub struct Node<T> {
 /// If you want a longer-lived reference to the underlying `T`, use [`Acquired::into_ref`].
 ///
 /// To release this `T` back to the [`Pool`], use [`Pool::release`].
+#[derive(Debug)]
+#[repr(transparent)]
 pub struct Acquired<'pool, T>(&'pool Node<T>);
 
 impl<T> AsRef<T> for Acquired<'_, T> {
@@ -151,6 +154,15 @@ pub struct Pool<T> {
     head_released: AtomicPtr<Node<T>>,
     discriminator: usize,
     count: AtomicUsize,
+}
+
+impl<T> core::fmt::Debug for Pool<T>
+where
+    T: core::fmt::Debug,
+{
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        f.debug_list().entries(self.iter()).finish()
+    }
 }
 
 impl<T> Default for Pool<T> {
